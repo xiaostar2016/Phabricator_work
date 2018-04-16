@@ -33,6 +33,8 @@ try {
   PhabricatorStartup::didEncounterFatalException('Core Exception', $ex, false);
 }
 
+
+
 function phabricator_startup() {
   // Load the PhabricatorStartup class itself.
   $t_startup = microtime(true);
