@@ -28,6 +28,7 @@ final class ManiphestExcelDefaultFormat extends ManiphestExcelFormat {
     $widths = array(
       null,
       15,
+      15,
       null,
       10,
       15,
@@ -52,6 +53,7 @@ final class ManiphestExcelDefaultFormat extends ManiphestExcelFormat {
     $rows = array();
     $rows[] = array(
       pht('ID'),
+      pht('Author'),
       pht('Owner'),
       pht('Status'),
       pht('Priority'),
@@ -64,6 +66,7 @@ final class ManiphestExcelDefaultFormat extends ManiphestExcelFormat {
     );
 
     $is_date = array(
+      false,
       false,
       false,
       false,
@@ -83,7 +86,12 @@ final class ManiphestExcelDefaultFormat extends ManiphestExcelFormat {
     );
 
     foreach ($tasks as $task) {
+      $task_author = null;
       $task_owner = null;
+ 
+      if ($task->getAuthorPHID()) {
+        $task_author = $handles[$task->getAuthorPHID()]->getName();
+      } 
       if ($task->getOwnerPHID()) {
         $task_owner = $handles[$task->getOwnerPHID()]->getName();
       }
@@ -96,6 +104,7 @@ final class ManiphestExcelDefaultFormat extends ManiphestExcelFormat {
 
       $rows[] = array(
         'T'.$task->getID(),
+        $task_author,
         $task_owner,
         idx($status_map, $task->getStatus(), '?'),
         idx($pri_map, $task->getPriority(), '?'),
