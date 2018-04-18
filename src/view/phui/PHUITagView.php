@@ -6,6 +6,7 @@ final class PHUITagView extends AphrontTagView {
   const TYPE_OBJECT         = 'object';
   const TYPE_STATE          = 'state';
   const TYPE_SHADE          = 'shade';
+  const TYPE_OUTLINE        = 'outline';
 
   const COLOR_RED           = 'red';
   const COLOR_ORANGE        = 'orange';
@@ -29,6 +30,7 @@ final class PHUITagView extends AphrontTagView {
   private $href;
   private $name;
   private $phid;
+  private $color;
   private $backgroundColor;
   private $dotColor;
   private $closed;
@@ -54,6 +56,10 @@ final class PHUITagView extends AphrontTagView {
 
   public function setShade($shade) {
     $this->shade = $shade;
+    return $this;
+  }
+  public function setColor($color) {
+    $this->color = $color;
     return $this;
   }
 
