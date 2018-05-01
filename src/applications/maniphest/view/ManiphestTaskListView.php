@@ -62,7 +62,8 @@ final class ManiphestTaskListView extends ManiphestView {
         ->setObject($task)
         ->setObjectName('T'.$task->getID())
         ->setHeader($task->getTitle())
-        ->setHref('/T'.$task->getID());
+        ->setHref('/T'.$task->getID())
+      ;
 
       if ($task->getOwnerPHID()) {
         $owner = $handles[$task->getOwnerPHID()];
@@ -98,7 +99,15 @@ final class ManiphestTaskListView extends ManiphestView {
         $handles,
         array_reverse($task->getProjectPHIDs()));
 
-      $item->addAttribute(
+        $subtype = $task->newSubtypeObject();
+        if ($subtype && $subtype->hasTagView()) {
+            $subtype_tag = $subtype->newTagView()
+                ->setSlimShady(true);
+            $item->addAttribute($subtype_tag);
+        }
+
+
+        $item->addAttribute(
         id(new PHUIHandleTagListView())
           ->setLimit(4)
           ->setNoDataString(pht('No Projects'))
