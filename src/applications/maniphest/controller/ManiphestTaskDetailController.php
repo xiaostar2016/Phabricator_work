@@ -56,7 +56,8 @@ final class ManiphestTaskDetailController extends ManiphestController {
 
     $timeline = $this->buildTransactionTimeline(
       $task,
-      new ManiphestTransactionQuery());
+      new ManiphestTransactionQuery()
+    );
 
     $monogram = $task->getMonogram();
     $crumbs = $this->buildApplicationCrumbs()
@@ -192,7 +193,8 @@ final class ManiphestTaskDetailController extends ManiphestController {
           $comment_view,
         ))
       ->addPropertySection(pht('Description'), $description)
-      ->addPropertySection(pht('Details'), $details);
+      ->addPropertySection(pht('Details'), $details)
+    ;
 
 
     return $this->newPage()
@@ -244,6 +246,48 @@ final class ManiphestTaskDetailController extends ManiphestController {
       $subtype_tag = $subtype->newTagView();
       $view->addTag($subtype_tag);
     }
+
+
+    //Added resolve time display.
+
+    $transactions = id(new ManiphestTransactionQuery())
+        ->setViewer($this->getViewer())
+        ->withObjectPHIDs(array($task->getPHID()))
+        ->needComments(true)
+        ->execute();
+
+    $transactions_temp = array();
+    foreach ($transactions as $transaction) {
+        if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS
+            && $transaction->getNewValue() == "resolved"
+            && !array_key_exists("Resolved",$transactions_temp)){
+            $transactions_temp["Resolved"] = "Resolved Time: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
+        }
+
+
+        if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS
+            && $transaction->getNewValue()=="released"
+            && !array_key_exists("Released",$transactions_temp)){
+            $transactions_temp["Released"]= "Released Time: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
+        }
+    }
+
+    if (!empty($transactions_temp["Resolved"])){
+        $tag = id(new PHUITagView())
+            ->setName($transactions_temp["Resolved"])
+            ->setShade('blue')
+            ->setType(PHUITagView::TYPE_SHADE);
+        $view->addTag($tag);
+    }
+
+    if (!empty($transactions_temp["Released"])){
+        $tag = id(new PHUITagView())
+            ->setName($transactions_temp["Released"])
+            ->setShade('blue')
+            ->setType(PHUITagView::TYPE_SHADE);
+        $view->addTag($tag);
+    }
+
 
     return $view;
   }
