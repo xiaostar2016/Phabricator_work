@@ -1,6 +1,6 @@
 **Phabricator** is a collection of web applications which help software companies build better software.
 
-**The project is a modified version of the project based on its own needs. **
+**The project is a modified version of the project based on its own needs.**
 
 Phabricator includes applications for:
 
