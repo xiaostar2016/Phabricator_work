@@ -266,9 +266,21 @@ final class PhabricatorApplicationSearchController
           $transactions_temp = array();
           foreach ($transactions as $transaction) {
               if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS) {
+                  if ($query->getDateResolvedAfter() != 0||$query->getDateResolvedBefore() != 0){
+                      if(strcmp($transaction->getNewValue(),'resolved') == 0){
+                          $transactions_temp[] = $transaction;
+                          break;
+                      }
+                  }
+
+                  if ($query->getDateReleasedAfter() != 0||$query->getDateReleasedBefore() != 0){
+                      if(strcmp($transaction->getNewValue(),'released') == 0){
+                          $transactions_temp[] = $transaction;
+                          break;
+                      }
+                  }
                   $transactions_temp[] = $transaction;
               }
-
           }
 
           $transactions = $transactions_temp;
