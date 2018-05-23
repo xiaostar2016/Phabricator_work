@@ -296,7 +296,7 @@ final class ManiphestTaskDetailController extends ManiphestController {
 //          ->setName("nicai")
 //      ;
 
-      $view->addActionLink($tag_view);
+//      $view->addActionLink($tag_view);
 
     return $view;
   }
