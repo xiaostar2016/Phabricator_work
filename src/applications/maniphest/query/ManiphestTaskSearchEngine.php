@@ -105,6 +105,8 @@ final class ManiphestTaskSearchEngine
           pht('(Show All)'),
           pht('Show Only Tasks With Open Subtasks'),
           pht('Show Only Tasks Without Open Subtasks')),
+
+      //I don`t find how to display for follow two items.
       id(new PhabricatorIDsSearchField())
         ->setLabel(pht('Parent IDs'))
         ->setKey('parentIDs')
@@ -113,6 +115,8 @@ final class ManiphestTaskSearchEngine
         ->setLabel(pht('Subtask IDs'))
         ->setKey('subtaskIDs')
         ->setAliases(array('subtaskID')),
+
+
       id(new PhabricatorSearchSelectField())
         ->setLabel(pht('Group By'))
         ->setKey('group')
@@ -132,6 +136,20 @@ final class ManiphestTaskSearchEngine
       id(new PhabricatorSearchTextField())
         ->setLabel(pht('Page Size'))
         ->setKey('limit'),
+
+        id(new PhabricatorSearchDateField())
+            ->setLabel(pht('Resolved After'))
+            ->setKey('resolvedStart'),
+        id(new PhabricatorSearchDateField())
+            ->setLabel(pht('Resolved Before'))
+            ->setKey('resolvedEnd'),
+        id(new PhabricatorSearchDateField())
+            ->setLabel(pht('Released After'))
+            ->setKey('releasedStart'),
+        id(new PhabricatorSearchDateField())
+            ->setLabel(pht('Released Before'))
+            ->setKey('releasedEnd'),
+
     );
   }
 
@@ -158,6 +176,10 @@ final class ManiphestTaskSearchEngine
       'modifiedStart',
       'modifiedEnd',
       'limit',
+      'resolvedStart',
+      'resolvedEnd',
+      'releasedStart',
+      'releasedEnd',
     );
   }
 
@@ -238,6 +260,22 @@ final class ManiphestTaskSearchEngine
       $query->setGroupBy($group);
     } else {
       $query->setGroupBy(head($this->getGroupValues()));
+    }
+
+    if ($map['resolvedStart']) {
+        $query->withDateResolvedAfter($map['resolvedStart']);
+    }
+
+    if ($map['resolvedEnd']) {
+        $query->withDateResolvedBefore($map['resolvedEnd']);
+    }
+
+    if ($map['releasedStart']) {
+        $query->withDateReleasedAfter($map['releasedStart']);
+    }
+
+    if ($map['releasedEnd']) {
+        $query->withDateReleasedBefore($map['releasedEnd']);
     }
 
     if ($map['ids']) {

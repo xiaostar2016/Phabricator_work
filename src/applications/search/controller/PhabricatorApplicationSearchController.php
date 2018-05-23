@@ -159,7 +159,8 @@ final class PhabricatorApplicationSearchController
 
     $form = id(new AphrontFormView())
       ->setUser($user)
-      ->setAction($request->getPath());
+      ->setAction($request->getPath())
+    ;
 
     $engine->buildSearchForm($form, $saved_query);
 
@@ -169,13 +170,13 @@ final class PhabricatorApplicationSearchController
     }
 
     $submit = id(new AphrontFormSubmitControl())
-      ->setValue(pht('Search'));
+      ->setValue(pht('Search 323'));
 
     if ($run_query && !$named_query && $user->isLoggedIn()) {
       $save_button = id(new PHUIButtonView())
         ->setTag('a')
         ->setHref('/search/edit/'.$saved_query->getQueryKey().'/')
-        ->setText(pht('Save Query'))
+        ->setText(pht('Save Query 223'))
         ->setIcon('fa-floppy-o');
       $submit->addButton($save_button);
     }
@@ -193,7 +194,7 @@ final class PhabricatorApplicationSearchController
     if ($named_query) {
       $title = $named_query->getQueryName();
     } else {
-      $title = pht('Advanced Search');
+      $title = pht('Advanced Search (Title)');
     }
 
     $header = id(new PHUIHeaderView())
@@ -202,12 +203,13 @@ final class PhabricatorApplicationSearchController
 
     $box = id(new PHUIObjectBoxView())
       ->setHeader($header)
-      ->addClass('application-search-results');
+      ->addClass('application-search-results')
+    ;
 
     if ($run_query || $named_query) {
       $box->setShowHide(
-        pht('Edit Query'),
-        pht('Hide Query'),
+        pht('Edit Query 000'),
+        pht('Hide Query 000'),
         $form,
         $this->getApplicationURI('query/advanced/?query='.$query_key),
         (!$named_query ? true : false));
@@ -233,7 +235,103 @@ final class PhabricatorApplicationSearchController
         $pager = $engine->newPagerForSavedQuery($saved_query);
         $pager->readFromRequest($request);
 
+
         $objects = $engine->executeQuery($query, $pager);
+
+//          $temp = id(new AphrontFormSubmitControl())
+//              ->setValue(pht('DateResolvedAfter： ' . date('Y-m-d H:i:s',$query->getDateResolvedAfter())
+//              .' DateResolvedBefore： '. date('Y-m-d H:i:s', $query->getDateResolvedBefore())
+//              .' DateReleasedAfter： '. date('Y-m-d H:i:s', $query->getDateReleasedAfter())
+//              .' DateReleasedBefore： '. date('Y-m-d H:i:s', $query->getDateReleasedBefore())
+//              ));
+//          $form->appendChild($temp);
+
+          $transactions = array();
+          if ($objects) {
+              $transactions = id(new ManiphestTransactionQuery())
+                  ->setViewer($user)
+                  ->withObjectPHIDs(mpull($objects, 'getPHID'))
+                  ->needComments(true)
+                  ->execute();
+          }
+
+//          foreach ($objects as $object){
+//              $temp = id(new AphrontFormSubmitControl())
+//                  ->setValue(pht('TASK == ID: '.$object->getID().'   Title: '.$object->getTitle().'   PHID: '.$object->getPHID()));
+//              $form->appendChild($temp);
+//          }
+
+          $transactions = array_reverse($transactions, true);
+
+          $transactions_temp = array();
+          foreach ($transactions as $transaction) {
+              if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS) {
+                  $transactions_temp[] = $transaction;
+              }
+
+          }
+
+          $transactions = $transactions_temp;
+
+          foreach ($transactions as $transaction) {
+//              $temp = id(new AphrontFormSubmitControl())
+//                  ->setValue(pht('Transaction == PHID: '.$transaction->getObjectPHID().'  NewValue: '.$transaction->getNewValue()
+//                      .' DateCreated: '.date('Y-m-d H:i:s',$transaction->getDateCreated())));
+//              $form->appendChild($temp);
+
+              $remove_result = false;
+              if(strcmp($transaction->getNewValue(),'resolved') == 0){
+                  if ($query->getDateResolvedAfter()) {
+                      if(!($transaction->getDateCreated() >= $query->getDateResolvedAfter())){
+                          $remove_result = true;
+//                          $temp = id(new AphrontFormSubmitControl())
+//                              ->setValue(pht($transaction->getNewValue().' 111 '.strcmp($transaction->getNewValue(),'resolved')));
+//                          $form->appendChild($temp);
+                      }
+                  }
+
+                  if ($query->getDateResolvedBefore()) {
+                      if (!($transaction->getDateCreated() <= $query->getDateResolvedBefore())){
+                          $remove_result = true;
+//                          $temp = id(new AphrontFormSubmitControl())
+//                              ->setValue(pht($transaction->getNewValue().' 222 '.strcmp($transaction->getNewValue(),'resolved')));
+//                          $form->appendChild($temp);
+                      }
+                  }
+              }
+
+              if(strcmp($transaction->getNewValue(),'released') == 0){
+                  if ($query->getDateReleasedAfter()) {
+                      if(!($transaction->getDateCreated() >= $query->getDateReleasedAfter())){
+                          $remove_result = true;
+//                          $temp = id(new AphrontFormSubmitControl())
+//                              ->setValue(pht($transaction->getNewValue().' 333 '.strcmp($transaction->getNewValue(),'released')));
+//                          $form->appendChild($temp);
+                      };
+                  }
+
+                  if ($query->getDateReleasedBefore()) {
+                      if(!($transaction->getDateCreated() <= $query->getDateReleasedBefore())){
+                          $remove_result = true;
+//                          $temp = id(new AphrontFormSubmitControl())
+//                              ->setValue(pht($transaction->getNewValue().' 444 '.strcmp($transaction->getNewValue(),'released')));
+//                          $form->appendChild($temp);
+                      }
+                  }
+              }
+
+              if ($remove_result){
+                  foreach($objects as $k=>$v){
+                      if(strcmp($v->getPHID(),$transaction->getObjectPHID()) == 0){
+                          unset($objects[$k]);
+                      }
+                  }
+              }
+          }
+
+
+
+//        $objects = array();
 
         $force_nux = $request->getBool('nux');
         if (!$objects || $force_nux) {
@@ -321,7 +419,8 @@ final class PhabricatorApplicationSearchController
             $pager_box = id(new PHUIBoxView())
               ->setColor(PHUIBoxView::GREY)
               ->addClass('application-search-pager')
-              ->appendChild($pager);
+              ->appendChild($pager)
+            ;
             $body[] = $pager_box;
           }
         }
@@ -369,7 +468,11 @@ final class PhabricatorApplicationSearchController
       ->setCrumbs($crumbs)
       ->setNavigation($nav)
       ->addClass('application-search-view')
-      ->appendChild($body);
+
+
+        //The $body display content of web page.
+      ->appendChild($body)
+        ;
   }
 
   private function processEditRequest() {
@@ -452,7 +555,7 @@ final class PhabricatorApplicationSearchController
     $nav->selectFilter('query/edit');
 
     $header = id(new PHUIHeaderView())
-      ->setHeader(pht('Saved Queries'))
+      ->setHeader(pht('Saved Queries 6667'))
       ->setProfileHeader(true);
 
     $box = id(new PHUIObjectBoxView())
@@ -465,7 +568,7 @@ final class PhabricatorApplicationSearchController
 
     return $this->newPage()
       ->setApplicationMenu($this->buildApplicationMenu())
-      ->setTitle(pht('Saved Queries'))
+      ->setTitle(pht('Saved Queries 6668'))
       ->setCrumbs($crumbs)
       ->setNavigation($nav)
       ->appendChild($box);

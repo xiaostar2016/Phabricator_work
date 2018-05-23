@@ -261,14 +261,14 @@ final class ManiphestTaskDetailController extends ManiphestController {
         if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS
             && $transaction->getNewValue() == "resolved"
             && !array_key_exists("Resolved",$transactions_temp)){
-            $transactions_temp["Resolved"] = "Resolved Time: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
+            $transactions_temp["Resolved"] = "Last Resolved: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
         }
 
 
         if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS
             && $transaction->getNewValue()=="released"
             && !array_key_exists("Released",$transactions_temp)){
-            $transactions_temp["Released"]= "Released Time: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
+            $transactions_temp["Released"]= "Last Released: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
         }
     }
 
@@ -288,6 +288,15 @@ final class ManiphestTaskDetailController extends ManiphestController {
         $view->addTag($tag);
     }
 
+//      $tag_view =  new PHUIButtonView();
+//      $tag_view
+////      ->setType(PHUITagView::TYPE_OUTLINE)
+//          ->setColor(PHUITagView::COLOR_ORANGE)
+//          ->setText("666")
+//          ->setName("nicai")
+//      ;
+
+      $view->addActionLink($tag_view);
 
     return $view;
   }

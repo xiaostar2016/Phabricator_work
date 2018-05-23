@@ -54,6 +54,7 @@ final class PhabricatorManiphestApplication extends PhabricatorApplication {
             => 'ManiphestTaskEditController',
         ),
         'export/(?P<key>[^/]+)/' => 'ManiphestExportController',
+        'transaction_export/(?P<key>[^/]+)/' => 'ManiphestExportTransactionController',
         'subpriority/' => 'ManiphestSubpriorityController',
       ),
     );

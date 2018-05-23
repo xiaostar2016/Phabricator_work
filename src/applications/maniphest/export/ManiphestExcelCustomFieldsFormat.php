@@ -49,8 +49,7 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
         PHPExcel $workbook,
         array $tasks,
         array $handles,
-        PhabricatorUser $user)
-    {
+        PhabricatorUser $user) {
 
         $sheet = $workbook->setActiveSheetIndex(0);
         $sheet->setTitle(pht('Tasks'));
@@ -132,6 +131,16 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
             ),
             array(
                 'title' => pht('URI'),
+                'width' => 30,
+                'celltype' => PHPExcel_Cell_DataType::TYPE_STRING,
+                'isDate' => false,
+            ),array(
+                'title' => pht('123'),
+                'width' => 30,
+                'celltype' => PHPExcel_Cell_DataType::TYPE_STRING,
+                'isDate' => false,
+            ),array(
+                'title' => pht('432'),
                 'width' => 30,
                 'celltype' => PHPExcel_Cell_DataType::TYPE_STRING,
                 'isDate' => false,
@@ -271,12 +280,14 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
                 idx($status_map, $task->getStatus(), '?'),
                 $task->getSubtype(),
                 idx($pri_map, $task->getPriority(), '?'),
-                $this->computeExcelDate($task->getDateCreated()),
-                $this->computeExcelDate($task->getDateModified()),
+                date('Y-m-d H:i:s',$task->getDateCreated()),
+                date('Y-m-d H:i:s',$task->getDateModified()),
                 $task->getTitle(),
                 $projects,
                 $pcolumn_names,
                 PhabricatorEnv::getProductionURI('/T' . $task->getID()),
+                $task->getPHID(),
+                $task->getAuthorPHID(),
             );
 
             // Query for the custom fields for a specific maniphest task object

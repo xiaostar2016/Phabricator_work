@@ -25,6 +25,10 @@ final class ManiphestTaskQuery extends PhabricatorCursorPagedPolicyAwareQuery {
   private $parentTaskIDs;
   private $subtaskIDs;
   private $subtypes;
+  private $resolvedAfter;
+  private $resolvedBefore;
+  private $releasedAfter;
+  private $releasedBefore;
 
   private $fullTextSearch   = '';
 
@@ -212,6 +216,42 @@ final class ManiphestTaskQuery extends PhabricatorCursorPagedPolicyAwareQuery {
   public function withSubtypes(array $subtypes) {
     $this->subtypes = $subtypes;
     return $this;
+  }
+
+  public function withDateResolvedAfter($resolvedAfter) {
+    $this->resolvedAfter = $resolvedAfter;
+    return $this;
+  }
+
+  public function withDateResolvedBefore($resolvedEnd) {
+    $this->resolvedBefore = $resolvedEnd;
+    return $this;
+  }
+
+  public function withDateReleasedAfter($releasedAfter) {
+    $this->releasedAfter = $releasedAfter;
+    return $this;
+  }
+
+  public function withDateReleasedBefore($releasedBefore) {
+    $this->releasedBefore = $releasedBefore;
+    return $this;
+  }
+
+  public function getDateResolvedAfter() {
+    return $this->resolvedAfter;
+  }
+
+  public function getDateResolvedBefore() {
+    return $this->resolvedBefore;
+  }
+
+  public function getDateReleasedAfter() {
+    return $this->releasedAfter ;
+  }
+
+  public function getDateReleasedBefore() {
+    return $this->releasedBefore;
   }
 
   public function newResultObject() {
