@@ -272,43 +272,34 @@ final class PhabricatorApplicationSearchController
 
               foreach ($transactions as $transaction) {
                   if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS) {
-                      if ($query->getDateResolvedAfter() != 0||$query->getDateResolvedBefore() != 0){
-                          if(strcmp($transaction->getNewValue(),'resolved') == 0){
-                              $transactions_temp[] = $transaction;
-                              break;
-                          }
-                      }
-
-                      if ($query->getDateReleasedAfter() != 0||$query->getDateReleasedBefore() != 0){
-                          if(strcmp($transaction->getNewValue(),'released') == 0){
-                              $transactions_temp[] = $transaction;
-                              break;
-                          }
-                      }
-
                       $transactions_temp[] = $transaction;
                   }
               }
 
               $transactions = $transactions_temp;
 
-              foreach($objects as $k=>$v){
-                  if(!strcmp($v->getPHID(),$transaction->getObjectPHID()) == 0){
-                      unset($objects[$k]);
+
+              $transactions_temp_resolved = array();
+              foreach ($transactions as $transaction) {
+                  if(strcmp($transaction->getNewValue(),'resolved') == 0){
+                      $transactions_temp_resolved[] = $transaction;
                   }
               }
 
+              $transactions_temp_released = array();
               foreach ($transactions as $transaction) {
-//              $temp = id(new AphrontFormSubmitControl())
-//                  ->setValue(pht('Transaction == PHID: '.$transaction->getObjectPHID().'  NewValue: '.$transaction->getNewValue()
-//                      .' DateCreated: '.date('Y-m-d H:i:s',$transaction->getDateCreated())));
-//              $form->appendChild($temp);
+                  if(strcmp($transaction->getNewValue(),'released') == 0){
+                      $transactions_temp_released[] = $transaction;
+                  }
+              }
 
-                  $remove_result = false;
-                  if(strcmp($transaction->getNewValue(),'resolved') == 0){
+
+              $transactions_resolved = array();
+              if ($query->getDateResolvedAfter() != 0||$query->getDateResolvedBefore() != 0){
+                  foreach ($transactions_temp_resolved as $transaction_temp_resolved){
                       if ($query->getDateResolvedAfter()) {
-                          if(!($transaction->getDateCreated() >= $query->getDateResolvedAfter())){
-                              $remove_result = true;
+                          if(!($transaction_temp_resolved->getDateCreated() >= $query->getDateResolvedAfter())){
+                              break;
 //                          $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 111 '.strcmp($transaction->getNewValue(),'resolved')));
 //                          $form->appendChild($temp);
@@ -316,43 +307,78 @@ final class PhabricatorApplicationSearchController
                       }
 
                       if ($query->getDateResolvedBefore()) {
-                          if (!($transaction->getDateCreated() <= $query->getDateResolvedBefore())){
-                              $remove_result = true;
+                          if (!($transaction_temp_resolved->getDateCreated() <= $query->getDateResolvedBefore())){
+                              break;
 //                          $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 222 '.strcmp($transaction->getNewValue(),'resolved')));
 //                          $form->appendChild($temp);
                           }
                       }
+                      $transactions_resolved[]=$transaction_temp_resolved;
                   }
+              }
 
-                  if(strcmp($transaction->getNewValue(),'released') == 0){
+              $transactions_released = array();
+              if ($query->getDateReleasedAfter() != 0||$query->getDateReleasedBefore() != 0){
+                  foreach ($transactions_temp_released as $transaction_temp_released){
                       if ($query->getDateReleasedAfter()) {
-                          if(!($transaction->getDateCreated() >= $query->getDateReleasedAfter())){
-                              $remove_result = true;
-//                          $temp = id(new AphrontFormSubmitControl())
+                          if(!($transaction_temp_released->getDateCreated() >= $query->getDateReleasedAfter())){
+                              break;
+//                              $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 333 '.strcmp($transaction->getNewValue(),'released')));
 //                          $form->appendChild($temp);
-                          };
+                          }
                       }
 
                       if ($query->getDateReleasedBefore()) {
-                          if(!($transaction->getDateCreated() <= $query->getDateReleasedBefore())){
-                              $remove_result = true;
+                          if(!($transaction_temp_released->getDateCreated() <= $query->getDateReleasedBefore())){
+                              break;
 //                          $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 444 '.strcmp($transaction->getNewValue(),'released')));
 //                          $form->appendChild($temp);
                           }
                       }
+                      $transactions_released[]=$transaction_temp_released;
                   }
-
-                  if ($remove_result){
+              }
+              $objects_resolved_temp =array();
+              if(count($transactions_resolved)!=0){
+                  foreach ($transactions_resolved as $transaction_resolved){
                       foreach($objects as $k=>$v){
-                          if(strcmp($v->getPHID(),$transaction->getObjectPHID()) == 0){
-                              unset($objects[$k]);
+                          if(strcmp($v->getPHID(),$transaction_resolved->getObjectPHID()) == 0){
+                              $objects_resolved_temp[$k]=$v;
                           }
                       }
                   }
               }
+
+              $objects_released_temp = array();
+              if(count($transactions_released)!=0){
+                  foreach ($transactions_released as $transaction_released){
+                      foreach($objects as $k=>$v){
+                          if(strcmp($v->getPHID(),$transaction_released->getObjectPHID()) == 0){
+                              $objects_released_temp[$k]=$v;
+                          }
+                      }
+                  }
+              }
+
+
+              $objects_temp =array();
+
+              if (count($objects_resolved_temp)!=0&&count($objects_released_temp)!=0){
+                  foreach ($objects_resolved_temp as $object_resolved_temp){
+                      foreach ($objects_released_temp as $k=>$object_released_temp){
+                          if(strcmp($object_resolved_temp->getPHID(),$object_released_temp->getObjectPHID()) == 0){
+                              $objects_temp[$k]=$object_released_temp;
+                          }
+                      }
+                  }
+              }else{
+                  $objects_temp = array_merge($objects_resolved_temp,$objects_released_temp);
+              }
+
+              $objects = $objects_temp;
           }
 
 
