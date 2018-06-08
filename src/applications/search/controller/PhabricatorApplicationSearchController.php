@@ -364,8 +364,20 @@ final class PhabricatorApplicationSearchController
                   }
               }
 
+              $objects_temp = array();
               if (count($objects_resolved_temp)!=0 && count($objects_released_temp)!=0){
-                  $objects_temp = array_intersect_assoc($objects_resolved_temp, $objects_released_temp);
+                  $objects_phid = array();
+                  foreach($objects_resolved_temp as $k=>$v){
+                      $objects_phid[] = $v->getPHID();
+                  }
+
+                  foreach($objects_released_temp as $k=>$v){
+                      foreach ($objects_phid as $object_phid){
+                          if(strcmp($v->getPHID(),$object_phid) == 0){
+                              $objects_temp[$k]=$v;
+                          }
+                      }
+                  }
               }else{
                   $objects_temp = array_merge($objects_resolved_temp,$objects_released_temp);
               }
