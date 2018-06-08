@@ -369,7 +369,7 @@ final class PhabricatorApplicationSearchController
               if (count($objects_resolved_temp)!=0&&count($objects_released_temp)!=0){
                   foreach ($objects_resolved_temp as $object_resolved_temp){
                       foreach ($objects_released_temp as $k=>$object_released_temp){
-                          if(strcmp($object_resolved_temp->getPHID(),$object_released_temp->getObjectPHID()) == 0){
+                          if(strcmp($object_resolved_temp->getPHID(),$object_released_temp->getPHID()) == 0){
                               $objects_temp[$k]=$object_released_temp;
                           }
                       }
