@@ -299,7 +299,7 @@ final class PhabricatorApplicationSearchController
                   foreach ($transactions_temp_resolved as $transaction_temp_resolved){
                       if ($query->getDateResolvedAfter()) {
                           if(!($transaction_temp_resolved->getDateCreated() >= $query->getDateResolvedAfter())){
-                              break;
+                              continue;
 //                          $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 111 '.strcmp($transaction->getNewValue(),'resolved')));
 //                          $form->appendChild($temp);
@@ -308,7 +308,7 @@ final class PhabricatorApplicationSearchController
 
                       if ($query->getDateResolvedBefore()) {
                           if (!($transaction_temp_resolved->getDateCreated() <= $query->getDateResolvedBefore())){
-                              break;
+                              continue;
 //                          $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 222 '.strcmp($transaction->getNewValue(),'resolved')));
 //                          $form->appendChild($temp);
@@ -323,7 +323,7 @@ final class PhabricatorApplicationSearchController
                   foreach ($transactions_temp_released as $transaction_temp_released){
                       if ($query->getDateReleasedAfter()) {
                           if(!($transaction_temp_released->getDateCreated() >= $query->getDateReleasedAfter())){
-                              break;
+                              continue;
 //                              $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 333 '.strcmp($transaction->getNewValue(),'released')));
 //                          $form->appendChild($temp);
@@ -332,7 +332,7 @@ final class PhabricatorApplicationSearchController
 
                       if ($query->getDateReleasedBefore()) {
                           if(!($transaction_temp_released->getDateCreated() <= $query->getDateReleasedBefore())){
-                              break;
+                              continue;
 //                          $temp = id(new AphrontFormSubmitControl())
 //                              ->setValue(pht($transaction->getNewValue().' 444 '.strcmp($transaction->getNewValue(),'released')));
 //                          $form->appendChild($temp);
@@ -341,6 +341,7 @@ final class PhabricatorApplicationSearchController
                       $transactions_released[]=$transaction_temp_released;
                   }
               }
+
               $objects_resolved_temp =array();
               if(count($transactions_resolved)!=0){
                   foreach ($transactions_resolved as $transaction_resolved){
