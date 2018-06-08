@@ -379,8 +379,8 @@ final class PhabricatorApplicationSearchController
                       }
                   }
               }else{
-                  if (!($query->getDateResolvedAfter() != 0 ||$query->getDateResolvedBefore() != 0)
-                      &&($query->getDateReleasedAfter() != 0 ||$query->getDateReleasedBefore() != 0)){
+                  if (!(($query->getDateResolvedAfter() != 0 ||$query->getDateResolvedBefore() != 0)
+                      &&($query->getDateReleasedAfter() != 0 ||$query->getDateReleasedBefore() != 0))){
                       $objects_temp = array_merge($objects_resolved_temp,$objects_released_temp);
                   }
               }
