@@ -135,16 +135,16 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
                 'celltype' => PHPExcel_Cell_DataType::TYPE_STRING,
                 'isDate' => false,
             ),array(
-                'title' => pht('123'),
+                'title' => pht('LastResolvedTime'),
                 'width' => 30,
                 'celltype' => PHPExcel_Cell_DataType::TYPE_STRING,
                 'isDate' => false,
             ),array(
-                'title' => pht('432'),
+                'title' => pht('LastReleasedTime'),
                 'width' => 30,
                 'celltype' => PHPExcel_Cell_DataType::TYPE_STRING,
                 'isDate' => false,
-            ),
+            )
         );
 
         // Create the custom fields from their configured definition and extract header cell details
@@ -250,6 +250,32 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
         }
 
         foreach ($tasks as $task) {
+
+            $transactions = id(new ManiphestTransactionQuery())
+                ->setViewer($user)
+                ->withObjectPHIDs(mpull(array($task), 'getPHID'))
+                ->needComments(true)
+                ->execute();
+
+            $transactions = array_reverse($transactions, true);
+
+            $tasks = mpull($tasks, null, 'getPHID');
+            $transactions_temp = array();
+
+            foreach ($transactions as $transaction) {
+                if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS) {
+                    if(strcmp($transaction->getNewValue(),'resolved') == 0){
+                        $transactions_temp['resolved'] = date('Y-m-d H:i:s',$transaction->getDateCreated());
+                    }
+
+                    if(strcmp($transaction->getNewValue(),'released') == 0){
+                        $transactions_temp['released'] = date('Y-m-d H:i:s',$transaction->getDateCreated());
+                    }
+                }
+            }
+
+            $transactions = $transactions_temp;
+
             $task_owner = null;
             $task_author = null;
             if ($task->getOwnerPHID()) {
@@ -286,8 +312,8 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
                 $projects,
                 $pcolumn_names,
                 PhabricatorEnv::getProductionURI('/T' . $task->getID()),
-                $task->getPHID(),
-                $task->getAuthorPHID(),
+                $transactions['resolved'],
+                $transactions['released'],
             );
 
             // Query for the custom fields for a specific maniphest task object
