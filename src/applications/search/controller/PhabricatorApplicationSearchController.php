@@ -264,7 +264,6 @@ final class PhabricatorApplicationSearchController
           $transactions = array_reverse($transactions, true);
 
           if(method_exists($query,'getDateResolvedAfter')){
-              if(function_exists($query->getDateResolvedAfter())){
                   if ($query->getDateResolvedAfter() != 0
                       ||$query->getDateResolvedBefore() != 0
                       ||$query->getDateReleasedAfter() != 0
@@ -389,8 +388,6 @@ final class PhabricatorApplicationSearchController
 
                       $objects = $objects_temp;
                   }
-
-              }
           }
 
 
