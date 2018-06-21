@@ -245,44 +245,6 @@ final class ManiphestTaskDetailController extends ManiphestController {
       $view->addTag($subtype_tag);
     }
 
-    $transactions = id(new ManiphestTransactionQuery())
-        ->setViewer($this->getViewer())
-        ->withObjectPHIDs(array($task->getPHID()))
-        ->needComments(true)
-        ->execute();
-
-    $transactions_temp = array();
-    foreach ($transactions as $transaction) {
-        if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS
-            && $transaction->getNewValue() == "resolved"
-            && !array_key_exists("Resolved",$transactions_temp)){
-            $transactions_temp["Resolved"] = "Last Resolved: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
-        }
-
-
-        if ($transaction->getTransactionType() == ManiphestTransaction::TYPE_STATUS
-            && $transaction->getNewValue()=="released"
-            && !array_key_exists("Released",$transactions_temp)){
-            $transactions_temp["Released"]= "Last Released: ".date('Y-m-d H:i:s',$transaction->getDateCreated());
-        }
-    }
-
-    if (!empty($transactions_temp["Resolved"])){
-        $tag = id(new PHUITagView())
-            ->setName($transactions_temp["Resolved"])
-            ->setShade('blue')
-            ->setType(PHUITagView::TYPE_SHADE);
-        $view->addTag($tag);
-    }
-
-    if (!empty($transactions_temp["Released"])){
-        $tag = id(new PHUITagView())
-            ->setName($transactions_temp["Released"])
-            ->setShade('blue')
-            ->setType(PHUITagView::TYPE_SHADE);
-        $view->addTag($tag);
-    }
-
     return $view;
   }
 

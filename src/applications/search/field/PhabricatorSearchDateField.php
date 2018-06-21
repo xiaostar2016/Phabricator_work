@@ -4,8 +4,7 @@ final class PhabricatorSearchDateField
   extends PhabricatorSearchField {
 
   protected function newControl() {
-    return id(new AphrontFormTextControl())
-      ->setPlaceholder(pht('"2022-12-25"'));
+    return new AphrontFormTextControl();
   }
 
   protected function getValueFromRequest(AphrontRequest $request, $key) {

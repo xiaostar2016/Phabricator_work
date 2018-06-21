@@ -12,13 +12,9 @@ final class ManiphestExportController extends ManiphestController {
     $viewer = $this->getViewer();
     $key = $request->getURIData('key');
 
-//        $ok = @include_once 'PHPExcel.php';
-        $root = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
-        $ok = include_once $root . '/externals/phpexcel/vendor/autoload.php';
-
-
-        if (!$ok) {
-            $dialog = $this->newDialog();
+    $ok = @include_once 'PHPExcel.php';
+    if (!$ok) {
+      $dialog = $this->newDialog();
 
       $inst1 = pht(
         'This system does not have PHPExcel installed. This software '.
