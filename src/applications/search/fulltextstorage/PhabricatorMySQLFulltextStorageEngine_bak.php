@@ -224,12 +224,10 @@ final class PhabricatorMySQLFulltextStorageEngine
         '%T field ON field.phid = document.phid',
         $field_table);
 
-//      $where[] = qsprintf(
-//        $conn,
-//        'MATCH(corpus, stemmedCorpus) AGAINST (%s IN BOOLEAN MODE)',
-//        $compiled_query);
-
-    $where[] = '(corpus LIKE \'%'.$raw_query.'%\' OR stemmedCorpus LIKE \'%'.$raw_query.'%\')';
+      $where[] = qsprintf(
+        $conn,
+        'MATCH(corpus, stemmedCorpus) AGAINST (%s IN BOOLEAN MODE)',
+        $compiled_query);
 
       if ($query->getParameter('field')) {
         $where[] = qsprintf(

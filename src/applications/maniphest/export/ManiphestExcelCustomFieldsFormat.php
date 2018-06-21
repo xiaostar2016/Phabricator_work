@@ -30,7 +30,7 @@ final class ManiphestExcelCustomFieldsFormat extends ManiphestExcelFormat
 {
     public function getName()
     {
-        return pht('Custom Fields');
+        return pht('Added Resolved and Released Custom Fields');
     }
 
     public function getFileName()

@@ -56,8 +56,7 @@ final class ManiphestTaskDetailController extends ManiphestController {
 
     $timeline = $this->buildTransactionTimeline(
       $task,
-      new ManiphestTransactionQuery()
-    );
+      new ManiphestTransactionQuery());
 
     $monogram = $task->getMonogram();
     $crumbs = $this->buildApplicationCrumbs()
@@ -193,8 +192,7 @@ final class ManiphestTaskDetailController extends ManiphestController {
           $comment_view,
         ))
       ->addPropertySection(pht('Description'), $description)
-      ->addPropertySection(pht('Details'), $details)
-    ;
+      ->addPropertySection(pht('Details'), $details);
 
 
     return $this->newPage()
@@ -247,9 +245,6 @@ final class ManiphestTaskDetailController extends ManiphestController {
       $view->addTag($subtype_tag);
     }
 
-
-    //Added resolve time display.
-
     $transactions = id(new ManiphestTransactionQuery())
         ->setViewer($this->getViewer())
         ->withObjectPHIDs(array($task->getPHID()))
@@ -287,16 +282,6 @@ final class ManiphestTaskDetailController extends ManiphestController {
             ->setType(PHUITagView::TYPE_SHADE);
         $view->addTag($tag);
     }
-
-//      $tag_view =  new PHUIButtonView();
-//      $tag_view
-////      ->setType(PHUITagView::TYPE_OUTLINE)
-//          ->setColor(PHUITagView::COLOR_ORANGE)
-//          ->setText("666")
-//          ->setName("nicai")
-//      ;
-
-//      $view->addActionLink($tag_view);
 
     return $view;
   }

@@ -98,13 +98,6 @@ final class ManiphestTaskListView extends ManiphestView {
         $handles,
         array_reverse($task->getProjectPHIDs()));
 
-      $subtype = $task->newSubtypeObject();
-      if($subtype && $subtype->hasTagView()){
-         $subtype_tag = $subtype->newTagView()
-                 ->setSlimShady(true);
-         $item->addAttribute($subtype_tag);
-      }
-
       $item->addAttribute(
         id(new PHUIHandleTagListView())
           ->setLimit(4)

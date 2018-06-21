@@ -105,8 +105,6 @@ final class ManiphestTaskSearchEngine
           pht('(Show All)'),
           pht('Show Only Tasks With Open Subtasks'),
           pht('Show Only Tasks Without Open Subtasks')),
-
-      //I don`t find how to display for follow two items.
       id(new PhabricatorIDsSearchField())
         ->setLabel(pht('Parent IDs'))
         ->setKey('parentIDs')
@@ -115,8 +113,6 @@ final class ManiphestTaskSearchEngine
         ->setLabel(pht('Subtask IDs'))
         ->setKey('subtaskIDs')
         ->setAliases(array('subtaskID')),
-
-
       id(new PhabricatorSearchSelectField())
         ->setLabel(pht('Group By'))
         ->setKey('group')
